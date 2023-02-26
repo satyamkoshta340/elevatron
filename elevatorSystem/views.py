@@ -116,14 +116,15 @@ def makeElevatorSystemRequest(request, elevator_system_id, requested_floor):
             return JsonResponse({ "message": "please request again" })
         
         """ Select the optimal elevator here """
-        selected_elevator = elevators[0]
+        selected_elevator = min( elevators, key = lambda x: abs(model_to_dict(x)["current_floor"] - requested_floor) )
+        # selected_elevator = elevators[0]
 
         floor_request = ElevatorSystemRequest(elevator_system=elevator_system_instance, requested_floor=requested_floor, elevator = selected_elevator)
         floor_request.save()
 
         selected_elevator = model_to_dict(selected_elevator)
-        print(selected_elevator)
-        print("=============================\n")
+        # print(selected_elevator)
+        # print("=============================\n")
         selected_elevator["next_destination_floor"] = requested_floor
         if requested_floor > selected_elevator["current_floor"]:
             selected_elevator["motion_status"]="moving up"
